@@ -13,7 +13,7 @@ export function ThemeToggle() {
   }, []);
 
   if (!mounted) {
-    return <div className="w-9 h-9" />; // Placeholder with same dimensions
+    return <div className="w-9 h-9" />;
   }
 
   return (
