@@ -1,41 +1,38 @@
+import { prisma } from "@/lib/prisma";
+import { BookCard } from "@/components/books/book-card";
 import { getServerSession } from "next-auth";
-import Link from "next/link";
-import { ThemeToggle } from "@/components/theme-toggle";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+export default async function BooksPage() {
+  const session = await getServerSession(authOptions);
 
-export default async function Home() {
-  const session = await getServerSession();
+  const books = await prisma.book.findMany({
+    orderBy: {
+      createdAt: "desc",
+    },
+    include: session?.user?.id
+      ? {
+          favorites: {
+            where: {
+              userId: session.user.id,
+            },
+          },
+        }
+      : undefined,
+  });
 
   return (
-    <main className="min-h-screen transition-colors duration-300">
-      <div className="absolute top-4 right-4">
-        <ThemeToggle />
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-3xl font-bold mb-8">Books</h1>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {books.map((book) => (
+          <BookCard
+            key={book.id}
+            book={book}
+            initialIsFavorite={book.favorites?.length > 0}
+          />
+        ))}
       </div>
-      <div className="flex min-h-screen flex-col items-center justify-center p-4">
-        <div className="text-center">
-          {session ? (
-            <div className="space-y-4">
-              <h1 className="text-2xl font-bold">
-                Welcome, {session.user?.name}!
-              </h1>
-              <Link
-                href="/api/auth/signout"
-                className="inline-block text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300">
-                Sign Out
-              </Link>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              <h1 className="text-2xl font-bold">Welcome to Our App</h1>
-              <p>Please sign in to continue</p>
-              <Link
-                href="/api/auth/signin"
-                className="inline-block text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300">
-                Sign In
-              </Link>
-            </div>
-          )}
-        </div>
-      </div>
-    </main>
+    </div>
   );
 }

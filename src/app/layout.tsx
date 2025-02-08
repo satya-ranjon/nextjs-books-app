@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { AuthProvider } from "@/components/providers/auth-provider";
+import { Navbar } from "@/components/header/navbar";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -36,7 +37,10 @@ export default function RootLayout({
       <body suppressHydrationWarning className="min-h-screen antialiased">
         <AuthProvider>
           <ThemeProvider>
-            <div className="flex min-h-screen flex-col">{children}</div>
+            <div className="min-h-screen max-w-7xl mx-auto">
+              <Navbar />
+              <main>{children}</main>
+            </div>
           </ThemeProvider>
         </AuthProvider>
       </body>
