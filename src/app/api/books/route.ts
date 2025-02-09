@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 export async function POST(request: Request) {
   const session = await getServerSession();
@@ -30,16 +31,15 @@ export async function POST(request: Request) {
 }
 
 export async function GET() {
-  try {
-    const books = await prisma.book.findMany({
-      orderBy: {
-        createdAt: "desc",
-      },
-    });
+  const session = await getServerSession(authOptions);
+  const books = await prisma.book.findMany({
+    orderBy: { createdAt: "desc" },
+    include: session?.user?.id
+      ? {
+          favorites: { where: { userId: session.user.id } },
+        }
+      : undefined,
+  });
 
-    return NextResponse.json(books);
-  } catch (error) {
-    console.error("Error fetching books:", error);
-    return new NextResponse("Internal Error", { status: 500 });
-  }
+  return NextResponse.json(books);
 }

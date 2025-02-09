@@ -1,52 +1,15 @@
-import { prisma } from "@/lib/prisma";
-import { BookCard } from "@/components/books/book-card";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+// No 'use client' - this is a Server Component
+import { BookList } from "@/components/books/book-list";
+import { SortOption } from "@/types/book";
+import { getFilteredBooks } from "./actions/book-actions";
 
-interface Book {
-  id: string;
-  title: string;
-  author: string;
-  coverImage: string;
-  description: string | null;
-  createdAt: Date;
-  updatedAt: Date;
-  favorites?: { userId: string }[];
+interface PageProps {
+  searchParams: { sort?: SortOption };
 }
 
-export default async function BooksPage() {
-  const session = await getServerSession(authOptions);
+export default async function BooksPage({ searchParams }: PageProps) {
+  const currentSort = (searchParams.sort || "title") as SortOption;
+  const books = await getFilteredBooks(currentSort);
 
-  const books = (await prisma.book.findMany({
-    orderBy: {
-      createdAt: "desc",
-    },
-    include: session?.user?.id
-      ? {
-          favorites: {
-            where: {
-              userId: session.user.id,
-            },
-          },
-        }
-      : undefined,
-  })) as Book[];
-
-  return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8 text-neutral-800 dark:text-neutral-100 ">
-        Books
-      </h1>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {books.map((book) => (
-          <BookCard
-            key={book.id}
-            book={book}
-            initialIsFavorite={(book?.favorites?.length ?? 0) > 0}
-          />
-        ))}
-      </div>
-    </div>
-  );
+  return <BookList books={books} currentSort={currentSort} />;
 }
