@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
 import { useState, useRef } from "react";
-import { FaBook, FaHeart, FaPlus } from "react-icons/fa";
+import { FaBook, FaHeart, FaPlus, FaBars } from "react-icons/fa";
 import Image from "next/image";
 import { ThemeToggle } from "../theme-toggle";
 import { useClickOutside } from "@/hooks/use-click-outside";
@@ -17,14 +17,17 @@ export function Navbar() {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showAddBookModal, setShowAddBookModal] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
 
   const dropdownRef = useRef<HTMLDivElement>(null);
   const authModalRef = useRef<HTMLDivElement>(null);
   const loginModalRef = useRef<HTMLDivElement>(null);
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
 
   useClickOutside(dropdownRef, () => setShowDropdown(false));
   useClickOutside(authModalRef, () => setShowAuthModal(false));
   useClickOutside(loginModalRef, () => setShowLoginModal(false));
+  useClickOutside(mobileMenuRef, () => setShowMobileMenu(false));
 
   const handleAddBookClick = () => {
     if (!session) {
@@ -74,50 +77,105 @@ export function Navbar() {
             <div className="flex items-center space-x-4">
               <ThemeToggle />
 
-              {session ? (
-                <div className="relative">
-                  <button
-                    onClick={() => setShowDropdown(!showDropdown)}
-                    className="flex items-center space-x-2 focus:outline-none">
-                    {session.user?.image ? (
-                      <Image
-                        src={session.user.image}
-                        alt="Profile"
-                        width={32}
-                        height={32}
-                        className="rounded-full"
-                      />
-                    ) : (
-                      <div className="h-8 w-8 rounded-full bg-blue-600" />
-                    )}
-                  </button>
+              {/* Mobile Menu Button */}
+              <button
+                onClick={() => setShowMobileMenu(!showMobileMenu)}
+                className="md:hidden text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-500">
+                <FaBars className="h-6 w-6" />
+              </button>
 
-                  {showDropdown && (
-                    <div
-                      ref={dropdownRef}
-                      className="absolute right-0 mt-2 w-48 py-2 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700">
-                      <div className="px-4 py-2 text-sm text-gray-700 dark:text-gray-200">
-                        {session.user?.name}
+              <div className="hidden md:block">
+                {session ? (
+                  <div className="relative">
+                    <button
+                      onClick={() => setShowDropdown(!showDropdown)}
+                      className="flex items-center space-x-2 focus:outline-none">
+                      {session.user?.image ? (
+                        <Image
+                          src={session.user.image}
+                          alt="Profile"
+                          width={32}
+                          height={32}
+                          className="rounded-full"
+                        />
+                      ) : (
+                        <div className="h-8 w-8 rounded-full bg-blue-600" />
+                      )}
+                    </button>
+
+                    {showDropdown && (
+                      <div
+                        ref={dropdownRef}
+                        className="absolute right-0 mt-2 w-48 py-2 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700">
+                        <div className="px-4 py-2 text-sm text-gray-700 dark:text-gray-200">
+                          {session.user?.name}
+                        </div>
+                        <div className="border-t border-gray-200 dark:border-gray-700">
+                          <button
+                            onClick={() => signOut()}
+                            className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-700">
+                            Sign out
+                          </button>
+                        </div>
                       </div>
-                      <div className="border-t border-gray-200 dark:border-gray-700">
-                        <button
-                          onClick={() => signOut()}
-                          className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-700">
-                          Sign out
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <button
-                  onClick={() => setShowAuthModal(true)}
-                  className="text-blue-600 dark:text-blue-500 hover:text-blue-700 dark:hover:text-blue-400">
-                  Sign In
-                </button>
-              )}
+                    )}
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => setShowAuthModal(true)}
+                    className="text-blue-600 dark:text-blue-500 hover:text-blue-700 dark:hover:text-blue-400">
+                    Sign In
+                  </button>
+                )}
+              </div>
             </div>
           </div>
+
+          {/* Mobile Menu */}
+          {showMobileMenu && (
+            <div
+              ref={mobileMenuRef}
+              className="md:hidden absolute top-16 right-0 left-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-lg z-50">
+              <div className="max-h-[calc(100vh-4rem)] overflow-y-auto">
+                <Link
+                  href="/"
+                  onClick={() => setShowMobileMenu(false)}
+                  className="block px-4 py-2 text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-500 hover:bg-gray-50 dark:hover:bg-gray-700">
+                  Books
+                </Link>
+                <Link
+                  href="/favorites"
+                  onClick={() => setShowMobileMenu(false)}
+                  className="block px-4 py-2 text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-500 hover:bg-gray-50 dark:hover:bg-gray-700">
+                  <div className="flex items-center space-x-1">
+                    <FaHeart className="h-4 w-4" />
+                    <span>Favorites</span>
+                  </div>
+                </Link>
+                <button
+                  onClick={() => {
+                    setShowMobileMenu(false);
+                    handleAddBookClick();
+                  }}
+                  className="block w-full text-left px-4 py-2 text-blue-600 dark:text-blue-500 hover:text-blue-700 dark:hover:text-blue-400 hover:bg-gray-50 dark:hover:bg-gray-700">
+                  <div className="flex items-center space-x-1">
+                    <FaPlus className="h-4 w-4" />
+                    <span>Add Book</span>
+                  </div>
+                </button>
+                {!session && (
+                  <button
+                    onClick={() => {
+                      setShowMobileMenu(false);
+                      setShowAuthModal(true);
+                    }}
+                    className="block w-full text-left px-4 py-2 text-blue-600 dark:text-blue-500 hover:text-blue-700 dark:hover:text-blue-400 hover:bg-gray-50 dark:hover:bg-gray-700">
+                    Sign In
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       </nav>
 

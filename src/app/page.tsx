@@ -2,10 +2,22 @@ import { prisma } from "@/lib/prisma";
 import { BookCard } from "@/components/books/book-card";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+
+interface Book {
+  id: string;
+  title: string;
+  author: string;
+  coverImage: string;
+  description: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+  favorites?: { userId: string }[];
+}
+
 export default async function BooksPage() {
   const session = await getServerSession(authOptions);
 
-  const books = await prisma.book.findMany({
+  const books = (await prisma.book.findMany({
     orderBy: {
       createdAt: "desc",
     },
@@ -18,7 +30,7 @@ export default async function BooksPage() {
           },
         }
       : undefined,
-  });
+  })) as Book[];
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -31,7 +43,7 @@ export default async function BooksPage() {
           <BookCard
             key={book.id}
             book={book}
-            initialIsFavorite={book?.favorites?.length > 0}
+            initialIsFavorite={(book?.favorites?.length ?? 0) > 0}
           />
         ))}
       </div>
