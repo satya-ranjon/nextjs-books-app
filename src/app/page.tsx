@@ -22,14 +22,16 @@ export default async function BooksPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">Books</h1>
+      <h1 className="text-3xl font-bold mb-8 text-neutral-800 dark:text-neutral-100 ">
+        Books
+      </h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {books.map((book) => (
           <BookCard
             key={book.id}
             book={book}
-            initialIsFavorite={book.favorites?.length > 0}
+            initialIsFavorite={book?.favorites?.length > 0}
           />
         ))}
       </div>

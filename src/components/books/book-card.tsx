@@ -1,13 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import { Book } from "@/types/book";
 import { FaHeart } from "react-icons/fa";
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useClickOutside } from "@/hooks/use-click-outside";
 import { LoginModal } from "@/components/modals/login-modal";
+import { Book } from "@/types/book";
 
 interface BookCardProps {
   book: Book;
@@ -62,10 +62,12 @@ export function BookCard({ book, initialIsFavorite = false }: BookCardProps) {
         <div className="p-4">
           <div className="flex justify-between items-start">
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+              <h3 className="text-lg font-semibold text-neutral-800 dark:text-neutral-200">
                 {book.title}
               </h3>
-              <p className="text-gray-700 dark:text-gray-300">{book.author}</p>
+              <p className="text-neutral-800 dark:text-neutral-200">
+                {book.author}
+              </p>
             </div>
             <button
               onClick={toggleFavorite}
