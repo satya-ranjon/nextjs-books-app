@@ -1,32 +1,25 @@
 "use client";
 
 import Image from "next/image";
-import { useState, useRef } from "react";
-import { useClickOutside } from "@/hooks/use-click-outside";
-import { LoginModal } from "@/components/modals/login-modal";
+import { useState } from "react";
+import { LoginModal } from "../modals/login-modal";
 import { Book } from "@/types/book";
 import { FavoriteButton } from "./favorite-button";
 
 interface BookCardProps {
   book: Book;
   initialIsFavorite: boolean;
-  onLoginRequired?: () => void;
 }
 
-export function BookCard({
-  book,
-  initialIsFavorite,
-  onLoginRequired,
-}: BookCardProps) {
+export function BookCard({ book, initialIsFavorite }: BookCardProps) {
   const [showLoginModal, setShowLoginModal] = useState(false);
-  const modalRef = useRef<HTMLDivElement>(null);
-
-  useClickOutside(modalRef, () => setShowLoginModal(false));
 
   return (
     <>
-      <div className="relative group rounded-lg shadow-md overflow-hidden transition-all hover:scale-105 border dark:border-gray-700">
-        <div className="relative h-48 w-full">
+      <div
+        className={`bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden 
+        ${showLoginModal ? "fixed inset-0 z-40 m-4 md:m-8 lg:m-12" : ""}`}>
+        <div className="relative aspect-[3/4]">
           <Image
             src={book.coverImage}
             alt={book.title}
@@ -37,24 +30,22 @@ export function BookCard({
             <FavoriteButton
               bookId={book.id}
               initialIsFavorite={initialIsFavorite}
-              onLoginRequired={onLoginRequired}
+              onLoginRequired={() => setShowLoginModal(true)}
             />
           </div>
         </div>
         <div className="p-4">
-          <div className="flex justify-between items-start">
-            <div>
-              <h3 className="text-lg font-semibold text-neutral-800 dark:text-neutral-200">
-                {book.title}
-              </h3>
-              <p className="text-neutral-800 dark:text-neutral-200">
-                {book.author}
-              </p>
-            </div>
-          </div>
-          <p className="mt-2 text-sm text-gray-600 dark:text-gray-300 line-clamp-2">
-            {book.description}
+          <h3 className="font-semibold text-gray-900 dark:text-white mb-1">
+            {book.title}
+          </h3>
+          <p className="text-sm text-gray-600 dark:text-gray-300">
+            {book.author}
           </p>
+          {book.description && (
+            <p className="mt-2 text-sm text-gray-500 dark:text-gray-400 line-clamp-2">
+              {book.description}
+            </p>
+          )}
         </div>
       </div>
 

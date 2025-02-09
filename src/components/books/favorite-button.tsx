@@ -5,6 +5,7 @@ import { FaHeart, FaRegHeart } from "react-icons/fa";
 import { toggleFavorite } from "@/app/actions/favorite-actions";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { LoginModal } from "@/components/modals/login-modal";
 
 interface FavoriteButtonProps {
   bookId: string;
@@ -15,18 +16,18 @@ interface FavoriteButtonProps {
 export function FavoriteButton({
   bookId,
   initialIsFavorite,
-  onLoginRequired,
 }: FavoriteButtonProps) {
   const [isFavorite, setIsFavorite] = useState(initialIsFavorite);
   const [isPending, startTransition] = useTransition();
+  const [showLoginModal, setShowLoginModal] = useState(false);
   const router = useRouter();
 
   const handleToggleFavorite = async () => {
     startTransition(async () => {
       const result = await toggleFavorite(bookId);
 
-      if (result.error === "Authentication required" && onLoginRequired) {
-        onLoginRequired();
+      if (result.error === "Authentication required") {
+        setShowLoginModal(true);
         return;
       }
 
@@ -48,17 +49,25 @@ export function FavoriteButton({
   };
 
   return (
-    <button
-      onClick={handleToggleFavorite}
-      disabled={isPending}
-      className={`p-2 rounded-full transition-colors duration-200 
-        ${
-          isFavorite
-            ? "text-red-500 hover:text-red-600"
-            : "text-gray-400 hover:text-red-500"
-        } ${isPending ? "opacity-50" : ""}`}
-      aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}>
-      {isFavorite ? <FaHeart size={20} /> : <FaRegHeart size={20} />}
-    </button>
+    <>
+      <button
+        onClick={handleToggleFavorite}
+        disabled={isPending}
+        className={`p-2 rounded-full transition-colors duration-200 
+          ${
+            isFavorite
+              ? "text-red-500 hover:text-red-600"
+              : "text-gray-400 hover:text-red-500"
+          } ${isPending ? "opacity-50" : ""}`}
+        aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}>
+        {isFavorite ? <FaHeart size={20} /> : <FaRegHeart size={20} />}
+      </button>
+
+      <LoginModal
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+        title="Sign in to add favorites"
+      />
+    </>
   );
 }
