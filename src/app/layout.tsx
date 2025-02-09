@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { AuthProvider } from "@/components/providers/auth-provider";
 import { Navbar } from "@/components/header/navbar";
+import { Toaster } from "sonner";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -45,6 +46,12 @@ export default function RootLayout({
             </div>
           </ThemeProvider>
         </AuthProvider>
+        <Toaster
+          position="top-center"
+          toastOptions={{
+            className: "dark:bg-gray-800 dark:text-white dark:border-gray-700",
+          }}
+        />
       </body>
     </html>
   );
