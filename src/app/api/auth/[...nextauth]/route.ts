@@ -1,4 +1,5 @@
-import NextAuth, { DefaultSession } from "next-auth";
+import NextAuth, { DefaultSession, Session } from "next-auth";
+import { JWT } from "next-auth/jwt";
 import GithubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
 
@@ -22,7 +23,7 @@ export const authOptions = {
     }),
   ],
   callbacks: {
-    session: ({ session, token }) => ({
+    session: ({ session, token }: { session: Session; token: JWT }) => ({
       ...session,
       user: {
         ...session.user,

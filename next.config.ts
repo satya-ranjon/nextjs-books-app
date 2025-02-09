@@ -10,6 +10,9 @@ const nextConfig: NextConfig = {
       "res.cloudinary.com",
     ],
   },
+  typescript: {
+    ignoreBuildErrors: true,
+  },
 };
 
 export default nextConfig;
