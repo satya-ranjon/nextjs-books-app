@@ -34,7 +34,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={inter.className} suppressHydrationWarning>
-      <body suppressHydrationWarning className="min-h-screen antialiased">
+      <body suppressHydrationWarning className="min-h-screen antialiased ">
         <AuthProvider>
           <ThemeProvider>
             <div className="min-h-screen max-w-7xl mx-auto">

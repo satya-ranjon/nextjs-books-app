@@ -1,26 +1,3 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@layer base {
-  :root {
-    --background: white;
-    --foreground: black;
-  }
-
-  [data-theme="dark"] {
-    --background: #0f172a;
-    --foreground: white;
-  }
-
-  html {
-    background-color: var(--background);
-    color: var(--foreground);
-  }
-
-  body {
-    background-color: var(--background);
-    color: var(--foreground);
-    transition: background-color 0.3s ease, color 0.3s ease;
-  }
-}
