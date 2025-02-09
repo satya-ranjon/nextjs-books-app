@@ -34,10 +34,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={inter.className} suppressHydrationWarning>
-      <body suppressHydrationWarning className="min-h-screen antialiased ">
+      <body
+        suppressHydrationWarning
+        className="min-h-screen antialiased dark:bg-gray-800">
         <AuthProvider>
           <ThemeProvider>
-            <div className="min-h-screen max-w-7xl mx-auto">
+            <div className="min-h-screen max-w-7xl mx-auto ">
               <Navbar />
               <main>{children}</main>
             </div>
