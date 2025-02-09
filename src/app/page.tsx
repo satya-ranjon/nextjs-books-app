@@ -6,15 +6,16 @@ import { BookSearchForm } from "@/components/books/book-search-form";
 import { BookSortForm } from "@/components/books/book-sort-form";
 
 interface PageProps {
-  searchParams: {
-    sort?: SortOption;
+  searchParams: Promise<{
+    sort?: string;
     search?: string;
-  };
+  }>;
 }
 
 export default async function BooksPage({ searchParams }: PageProps) {
-  const currentSort = (searchParams.sort || "title") as SortOption;
-  const searchQuery = searchParams.search || "";
+  const params = await searchParams;
+  const currentSort = (params.sort || "title") as SortOption;
+  const searchQuery = params.search || "";
   const { books, error } = await getFilteredBooks(currentSort, searchQuery);
 
   return (
